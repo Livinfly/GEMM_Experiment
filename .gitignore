@@ -1,0 +1,5 @@
+.ipynb_checkpoints
+build
+dist
+*.egg-info
+report1.nsys-rep
