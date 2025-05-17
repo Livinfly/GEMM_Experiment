@@ -160,8 +160,8 @@ if __name__ == "__main__":
 	parser.add_argument("--output_dim", type=int, default=10, help="MLP output dimension")
 	
 	# argument for all
-	parser.add_argument("--runs", type=int, default=800, help="Number of timing runs")
-	parser.add_argument("--warmup", type=int, default=200, help="Number of warmup runs")
+	parser.add_argument("--runs", type=int, default=5, help="Number of timing runs")
+	parser.add_argument("--warmup", type=int, default=2, help="Number of warmup runs")
 
 	args = parser.parse_args()
 

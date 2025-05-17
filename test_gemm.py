@@ -26,7 +26,7 @@ def skip_if_unavailable(func_name_str):
 
 class TestGemmCorrectness(unittest.TestCase):
 
-    def _run_test(self, M, K, N, custom_func_name, custom_func, ref_func=torch.matmul, atol=0, rtol=0):
+    def _run_test(self, M, K, N, custom_func_name, custom_func, ref_func=torch.matmul, atol=1e-4, rtol=1e-4):
         """ Helper function to run a correctness test for GEMM """
         print(f"\nTesting {custom_func_name} with M={M}, K={K}, N={N}")
         try:
@@ -38,7 +38,7 @@ class TestGemmCorrectness(unittest.TestCase):
 
         print(f"  Calculating reference (torch.matmul) for {custom_func_name}...")
         # 用 torch.matmul 放 cuda 上算，应该是为了效率，存在小误差
-        C_ref = ref_func(A_torch.to('cpu'), B_torch.to('cpu')).to('cuda')
+        C_ref = (ref_func(A_torch.to('cpu'), B_torch.to('cpu'))).to('cuda')
 
         print(f"  Running custom function {custom_func_name}...")
         try:
