@@ -3,6 +3,6 @@
 build
 dist
 *.egg-info
-*.nsys-rep
+# *.nsys-rep
 *.sqlite
-*.ncu-rep
+# *.ncu-rep

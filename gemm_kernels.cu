@@ -126,12 +126,14 @@ __global__ void matmul_tiled_16_kernel(const float *A, const float *B, float *C,
 // #undef TILE_SIZE
 // }
 
+// warmup 20  runs 1000
 // 1x2 => 2.2 ~ 2.5x  256 (TILE_SIZE 32)
 // 2x2 => 3.2 ~ 3.5x
 // 4x2 => 4.0 ~ 4.4x
-// 8x2 => 4.8 ~ 4.9x
+// 8x2 => 4.5 ~ 4.9x
+// 8x2 => 4.9x        1024
 
-// 8x2 => 4.5 ~ 4.8x  256   (TILE_SIZE 64)
+// 8x2 => 4.4 ~ 4.8x  256   (TILE_SIZE 64)
 // 8x2 => 6.1x        1024
 __global__ void matmul_tiled_op_kernel(const float *__restrict__ A,
                                        const float *__restrict__ B, float *C,
