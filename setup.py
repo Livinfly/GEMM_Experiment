@@ -11,7 +11,7 @@ setup(
 				'gemm_extension.cpp',
 				'gemm_kernels.cu',
 			],
-			extra_compile_args={'cxx': ['-g'], 'nvcc': ['-O2']}  # '-DTILE_SIZE=16'
+			extra_compile_args={'cxx': ['-g'], 'nvcc': ['-O3']}  # '-DTILE_SIZE=16'
 		)
 	],
 	cmdclass={

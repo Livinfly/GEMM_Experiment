@@ -126,6 +126,7 @@ __global__ void matmul_tiled_16_kernel(const float *A, const float *B, float *C,
 // #undef TILE_SIZE
 // }
 
+// float2
 // warmup 20  runs 1000
 // 1x2 => 2.2 ~ 2.5x  256 (TILE_SIZE 32)
 // 2x2 => 3.2 ~ 3.5x
@@ -205,6 +206,92 @@ __global__ void matmul_tiled_op_kernel(const float *__restrict__ A,
 #undef TILE_SIZE
 }
 
+// __half
+//
+// __global__ void matmul_tiled_op_kernel(const float *__restrict__ A,
+//                                        const float *__restrict__ B, float *C,
+//                                        int M, int K, int N) {
+// #define TILE_SIZE 64
+//     __shared__ __half a_shared[TILE_SIZE][TILE_SIZE];
+//     __shared__ __half b_shared[TILE_SIZE][TILE_SIZE];
+//     int tx_f = threadIdx.x * INNER_TILE_SIZE_f,
+//         ty_pair = threadIdx.y * INNER_TILE_SIZE_1;
+//     int bx = blockIdx.x, by = blockIdx.y;
+//     int row_base = by * TILE_SIZE + ty_pair;
+//     int col_base = bx * TILE_SIZE + tx_f;
+//     float2 accum[INNER_TILE_SIZE_1];  // __half2 1.0 (5.7x, 256) (9.6x, 1024)
+//                                       // float2  0.1 (4.9x, 256) (8.0x, 1024)
+// #pragma unroll
+//     for (int i = 0; i < INNER_TILE_SIZE_1; i++) {
+//         accum[i] = make_float2(0.0f, 0.0f);
+//         // accum[i] = __halves2half2(__float2half(0.0f), __float2half(0.0f));
+//     }
+// #pragma unroll
+//     for (int idx = 0; idx < K; idx += TILE_SIZE) {
+//         int k = idx + tx_f;
+// #pragma unroll
+//         for (int i = 0; i < INNER_TILE_SIZE_1; i++) {
+// #pragma unroll
+//             for (int j = 0; j < INNER_TILE_SIZE_f; j++) {
+//                 if (row_base + i < M && k + j < K) {
+//                     a_shared[ty_pair + i][tx_f + j] =
+//                         __float2half(A[(row_base + i) * K + k + j]);
+//                 } else {
+//                     a_shared[ty_pair + i][tx_f + j] = __float2half(0.0f);
+//                 }
+//             }
+//         }
+//         k = idx + ty_pair;
+// #pragma unroll
+//         for (int i = 0; i < INNER_TILE_SIZE_1; i++) {
+// #pragma unroll
+//             for (int j = 0; j < INNER_TILE_SIZE_f; j++) {
+//                 if (k + i < K && col_base + j < N) {
+//                     b_shared[ty_pair + i][tx_f + j] =
+//                         __float2half(B[(k + i) * N + col_base + j]);
+//                 } else {
+//                     b_shared[ty_pair + i][tx_f + j] = __float2half(0.0f);
+//                 }
+//             }
+//         }
+//         __syncthreads();
+// #pragma unroll
+//         for (int tk = 0; tk < TILE_SIZE; tk++) {
+// #pragma unroll
+//             for (int i = 0; i < INNER_TILE_SIZE_1; i++) {
+//                 __half val_a = a_shared[ty_pair + i][tk];
+//                 // __half2 val_b =
+//                 //     __halves2half2(b_shared[tk][tx_f], b_shared[tk][tx_f +
+//                 //     1]);
+//                 // accum[i] =
+//                 //     __hfma2(__halves2half2(val_a, val_a), val_b,
+//                 accum[i]);
+
+//                 // accum[i].x += __hmul(val_a, b_shared[tk][tx_f]);
+//                 // accum[i].y += __hmul(val_a, b_shared[tk][tx_f + 1]);
+
+//                 accum[i].x += __half2float(__hmul(val_a,
+//                 b_shared[tk][tx_f])); accum[i].y +=
+//                     __half2float(__hmul(val_a, b_shared[tk][tx_f + 1]));
+//             }
+//         }
+//         __syncthreads();
+//     }
+// #pragma unroll
+//     for (int i = 0; i < INNER_TILE_SIZE_1; i++) {
+//         if (row_base + i < M) {
+//             if (col_base < N) {
+//                 C[(row_base + i) * N + col_base] = accum[i].x;
+//             }
+//             if (col_base + 1 < N) {
+//                 C[(row_base + i) * N + col_base + 1] = accum[i].y;
+//             }
+//         }
+//     }
+// #undef TILE_SIZE
+// }
+
+// float4
 // 1x4 => 2.0~2.2x  256
 // 2x4 => 2.6~2.9x
 // 4x4 => 3.2~3.5x
