@@ -6,3 +6,4 @@ dist
 # *.nsys-rep
 *.sqlite
 # *.ncu-rep
+__pycache__
