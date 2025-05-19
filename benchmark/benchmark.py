@@ -76,26 +76,26 @@ if __name__ == "__main__":
 		mlp_input_tensor = torch.randn(args.batch_size, args.input_dim, dtype=torch.float32)
 
 		# PyTorch Linear MLP
-		model_torch = create_mlp(args.input_dim, args.hidden_dims, args.output_dim)
-		mlp_results['pytorch_linear_mlp'] = benchmark_model("PyTorch Linear MLP", model_torch, mlp_input_tensor, args.warmup, args.runs)
+		# model_torch = create_mlp(args.input_dim, args.hidden_dims, args.output_dim)
+		# mlp_results['pytorch_linear_mlp'] = benchmark_model("PyTorch Linear MLP", model_torch, mlp_input_tensor, args.warmup, args.runs)
 
 		# Custom Naive MLP
-		try:
-			model_custom_naive = create_mlp(args.input_dim, args.hidden_dims, args.output_dim,
-											use_custom_linear=True, custom_gemm_func=gemm_cuda_kernels.naive_gemm)
-			mlp_results['custom_naive_mlp'] = benchmark_model("Custom Naive MLP", model_custom_naive, mlp_input_tensor, args.warmup, args.runs)
-		except Exception as e:
-			print(f"Error setting up/benchmarking Custom Naive MLP: {e}")
-			mlp_results['custom_naive_mlp'] = float('nan')
+		# try:
+		# 	model_custom_naive = create_mlp(args.input_dim, args.hidden_dims, args.output_dim,
+		# 									use_custom_linear=True, custom_gemm_func=gemm_cuda_kernels.naive_gemm)
+		# 	mlp_results['custom_naive_mlp'] = benchmark_model("Custom Naive MLP", model_custom_naive, mlp_input_tensor, args.warmup, args.runs)
+		# except Exception as e:
+		# 	print(f"Error setting up/benchmarking Custom Naive MLP: {e}")
+		# 	mlp_results['custom_naive_mlp'] = float('nan')
 
 		# Custom Tiled_16 MLP
-		try:
-			model_custom_tiled_16 = create_mlp(args.input_dim, args.hidden_dims, args.output_dim,
-											use_custom_linear=True, custom_gemm_func=gemm_cuda_kernels.tiled_16_gemm)
-			mlp_results['custom_tiled_16_mlp'] = benchmark_model("Custom Tiled_16 MLP", model_custom_tiled_16, mlp_input_tensor, args.warmup, args.runs)
-		except Exception as e:
-			print(f"Error setting up/benchmarking Custom Tiled_16 MLP: {e}")
-			mlp_results['custom_tiled_16_mlp'] = float('nan')
+		# try:
+		# 	model_custom_tiled_16 = create_mlp(args.input_dim, args.hidden_dims, args.output_dim,
+		# 									use_custom_linear=True, custom_gemm_func=gemm_cuda_kernels.tiled_16_gemm)
+		# 	mlp_results['custom_tiled_16_mlp'] = benchmark_model("Custom Tiled_16 MLP", model_custom_tiled_16, mlp_input_tensor, args.warmup, args.runs)
+		# except Exception as e:
+		# 	print(f"Error setting up/benchmarking Custom Tiled_16 MLP: {e}")
+		# 	mlp_results['custom_tiled_16_mlp'] = float('nan')
 
 		# Custom Tiled_op MLP
 		try:
