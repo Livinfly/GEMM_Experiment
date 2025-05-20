@@ -37,11 +37,21 @@ class TestGemmCorrectness(unittest.TestCase):
             return
 
         print(f"  Calculating reference (torch.matmul) for {custom_func_name}...")
-        # 用 torch.matmul 放 cuda 上算，应该是为了效率，存在小误差
+
         C_ref = (ref_func(A_torch.to('cpu'), B_torch.to('cpu'))).to('cuda')
+        # print(f"  Calculating reference (forforfor) for {custom_func_name}...")
+        # A_torch, B_torch = A_torch.to('cpu'), B_torch.to('cpu')
+        # C_ref = torch.zeros(M, N, dtype=torch.float32, device='cpu')
+        # for i in range(M):
+        #     for j in range(N):
+        #         for k in range(K):
+        #             C_ref[i, j] += A_torch[i, k] * B_torch[k, j]
+
+        # C_ref = C_ref.to('cuda')
 
         print(f"  Running custom function {custom_func_name}...")
         try:
+            A_torch, B_torch = A_torch.to('cuda'), B_torch.to('cuda')
             C_custom = custom_func(A_torch, B_torch)
             torch.cuda.synchronize()
         except Exception as e:
